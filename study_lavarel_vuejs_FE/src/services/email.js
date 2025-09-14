@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE = 'http://localhost:8000/api/emails'
+const API_BASE = 'http://localhost:8000/api/v1/emails'
 
 export const getEmails = () => axios.get(API_BASE)
 export const getEmail = (id) => axios.get(`${API_BASE}/${id}`)

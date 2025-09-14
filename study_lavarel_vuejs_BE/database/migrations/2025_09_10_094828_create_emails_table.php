@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        {
         Schema::create('emails', function (Blueprint $table) {
             $table->id();                    // id
             $table->string('email'); // email
             $table->enum('status', ['pending', 'sent', 'failed'])->default('pending'); // status
-            $table->timestamps();             // created_at, updated_at
             $table->softDeletes();            // deleted_at cho soft delete
         });
-    }
     }
 
     /**

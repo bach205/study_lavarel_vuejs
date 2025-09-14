@@ -15,14 +15,6 @@ use App\Http\Controllers\EmailsController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::prefix('emails')->group(function () {
-    Route::get('/', [EmailsController::class, 'getAll']);      
-    Route::post('/', [EmailsController::class, 'store']);     
-    Route::get('{id}', [EmailsController::class, 'show']);    
-    Route::put('{id}', [EmailsController::class, 'update']);  
-    Route::delete('{id}', [EmailsController::class, 'softDelete']);
+Route::prefix('v1')->group(function () {
+    require base_path('routes/emails.php');
 });
