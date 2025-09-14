@@ -26,7 +26,7 @@ class EmailsController extends Controller
             return response()->json($data, 200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return response()->json(['message' => 'Server Error'], 500);
+            return response()->json(['message' => 'Có lỗi xảy ra, vui lòng thử lại sau'], 500);
         }
     }
 
@@ -35,34 +35,27 @@ class EmailsController extends Controller
      */
     public function store(Request $request)
     {
+        $validate = $request->validate([
+            'email' => 'required|email:rfc'
+        ]);
         try {
-            $validate = $request->validate([
-                'email' => 'required|email:rfc'
-            ]);
             $this->emailService->sendEmail(
                 $validate['email'],
                 'Welcome to Our Service',
                 '<h1>Thank you for registering!</h1><p>We are excited to have you on board.</p>',
                 public_path('index.php')
             );
-            Emails::create([
+            Emails::create(attributes: [
                 'email' => $validate['email'],
                 'status' => 'sent'
             ]);
             return response()->json(['message' => 'create successfully'], 201);
-        } catch (\Illuminate\Validation\ValidationException $ve) {
-            return response()->json(['message' => 'Validation Error', 'errors' => $ve->errors()], 422);
         } catch (\Throwable $th) {
-            try {
-                Emails::create([
-                    'email' => $validate['email'],
-                    'status' => 'failed'
-                ]);
-            } catch (\Throwable $e) {
-                return response()->json(['message' => 'Server Error', 'dummy' => $e->getMessage()], 500);
-
-            }
-            return response()->json(['message' => 'Server Error', 'dummy' => $th->getMessage()], 500);
+            Emails::create([
+                'email' => $validate['email'],
+                'status' => 'failed'
+            ]);
+            return response()->json(['message' => 'Có lỗi xảy ra, vui lòng thử lại sau', 'dummy' => $th->getMessage()], 500);
         }
     }
     /**
@@ -92,7 +85,7 @@ class EmailsController extends Controller
             $email->save();
             return response()->json(['message' => 'update successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Server Error'], 500);
+            return response()->json(['message' => 'Có lỗi xảy ra, vui lòng thử lại sau'], 500);
         }
 
     }
@@ -130,7 +123,7 @@ class EmailsController extends Controller
             $emailRecord->save();
             return response()->json(['message' => 'Email resent successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Not Found or Server Error'], 404);
+            return response()->json(['message' => 'Not Found or Có lỗi xảy ra, vui lòng thử lại sau'], 404);
         }
     }
 }
