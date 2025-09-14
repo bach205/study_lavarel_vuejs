@@ -110,4 +110,27 @@ class EmailsController extends Controller
             return response()->json(['message' => 'Not Found'], 404);
         }
     }
+
+    public function resendEmail(string $id)
+    {
+        try {
+            $emailRecord = Emails::findOrFail($id);
+            if ($emailRecord->status === 'sent') {
+                return response()->json(['message' => 'Email has already been sent'], 400);
+            } elseif ($emailRecord->status === 'pending') {
+                return response()->json(['message' => 'Email is still pending, please wait'], 400);
+            }
+            $this->emailService->sendEmail(
+                $emailRecord->email,
+                'Resend: Welcome to Our Service',
+                '<h1>Thank you for registering!</h1><p>We are excited to have you on board.</p>',
+                public_path('index.php')
+            );
+            $emailRecord->status = 'sent';
+            $emailRecord->save();
+            return response()->json(['message' => 'Email resent successfully'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Not Found or Server Error'], 404);
+        }
+    }
 }
