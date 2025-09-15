@@ -8,6 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Services\EmailService;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\GeneralMail;
 use Throwable;
 
 class SendEmailJob implements ShouldQueue
@@ -28,9 +30,9 @@ class SendEmailJob implements ShouldQueue
         $this->content = $content;
     }
 
-    public function handle(EmailService $emailService)
+    public function handle(GeneralMail $generalMail)
     {
-        $emailService->sendEmail($this->email, $this->subject, $this->content);
+        Mail::to($this->email)->send($generalMail);
     }
 
     public function failed(Throwable $exception)

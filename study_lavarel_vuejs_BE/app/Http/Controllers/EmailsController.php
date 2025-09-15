@@ -6,15 +6,17 @@ use Illuminate\Http\Request;
 use App\Models\Emails;
 use App\Services\EmailService;
 use Illuminate\Support\Facades\Log;
+use App\Mail\GeneralMail;
+use Illuminate\Support\Facades\Mail;
 
 class EmailsController extends Controller
 {
     protected $emailService;
 
     // Laravel tự inject service từ container
-    public function __construct(EmailService $emailService)
+    public function __construct()
     {
-        $this->emailService = $emailService;
+
     }
     /**
      * Display a listing of the resource.
@@ -39,12 +41,7 @@ class EmailsController extends Controller
             'email' => 'required|email:rfc'
         ]);
         try {
-            $this->emailService->sendEmail(
-                $validate['email'],
-                'Welcome to Our Service',
-                '<h1>Thank you for registering!</h1><p>We are excited to have you on board.</p>',
-                public_path('index.php')
-            );
+            Mail::to($validate['email'])->send(new GeneralMail());
             Emails::create(attributes: [
                 'email' => $validate['email'],
                 'status' => 'sent'
