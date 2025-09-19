@@ -13,14 +13,14 @@ class ProcessEmails extends Command
     public function handle()
     {
         // Lấy email chưa gửi
-        $emails = Emails::all();
+        $emails = Emails::where("status","failed")->get();
 
         foreach ($emails as $email) {
             // Dispatch job vào queue
             SendEmailJob::dispatch(
                 $email->email,
-                'Scheduled Email',
-                '<p>This is an automated email.</p>'
+                $email->subject,
+                $email->content
             );
         }
 

@@ -38,18 +38,24 @@ class EmailsController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'email' => 'required|email:rfc'
+            'email' => 'required|email:rfc',
+            'subject' => 'required|string|max:255',
+            'content' => 'required|string'
         ]);
         try {
-            Mail::to($validate['email'])->send(new GeneralMail());
-            Emails::create(attributes: [
+            Mail::to($validate['email'])->send(new GeneralMail($validate['subject'], $validate['content']));
+            Emails::create([
                 'email' => $validate['email'],
+                'subject' => $validate['subject'],
+                'content' => $validate['content'],
                 'status' => 'sent'
             ]);
             return response()->json(['message' => 'create successfully'], 201);
         } catch (\Throwable $th) {
             Emails::create([
                 'email' => $validate['email'],
+                'subject' => $validate['subject'],
+                'content' => $validate['content'],
                 'status' => 'failed'
             ]);
             return response()->json(['message' => 'Có lỗi xảy ra, vui lòng thử lại sau', 'dummy' => $th->getMessage()], 500);
@@ -75,11 +81,12 @@ class EmailsController extends Controller
     {
         try {
             $validate = $request->validate([
-                'email' => 'required|email:rfc'
+                'email' => 'required|email:rfc',
+                'subject' => 'required|string|max:255',
+                'content' => 'required|string'
             ]);
             $email = Emails::findOrFail($id);
-            $email->email = $validate['email'];
-            $email->save();
+            $email->update($validate);
             return response()->json(['message' => 'update successfully'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Có lỗi xảy ra, vui lòng thử lại sau'], 500);

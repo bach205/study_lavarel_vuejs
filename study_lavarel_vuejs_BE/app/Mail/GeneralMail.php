@@ -15,12 +15,16 @@ class GeneralMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $subject;
+    public $content;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($subject = 'General Mail', $content = 'Default content')
     {
-        //
+        $this->subject = $subject;
+        $this->content = $content;
     }
 
     /**
@@ -30,7 +34,7 @@ class GeneralMail extends Mailable
     {
         return new Envelope(
             // from: new Address("smth@gmail.com"), dungf macj dinh trong env
-            subject: 'General Mail',
+            subject: $this->subject,
         );
     }
 

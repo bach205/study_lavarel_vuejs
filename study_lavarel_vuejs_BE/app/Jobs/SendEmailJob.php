@@ -30,9 +30,10 @@ class SendEmailJob implements ShouldQueue
         $this->content = $content;
     }
 
-    public function handle(GeneralMail $generalMail)
+    public function handle()
     {
-        Mail::to($this->email)->send($generalMail);
+        Mail::to($this->email)
+        ->send(new GeneralMail($this->subject, $this->content));
     }
 
     public function failed(Throwable $exception)
